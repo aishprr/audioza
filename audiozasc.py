@@ -5,24 +5,24 @@ import pylab
 import numpy
 import wave
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from tkMessageBox import showinfo    
+from tkMessageBox import showinfo
 import sys
 import copy
 import audioop
 import time
 
 class Filedata(object):
-    
+
     def __init__(self,file_path):
         #initializes all the values for any new file that is
         # opened. Maximum of 8 files can be opened.
         #Corresponing changes are made in the attributes of
         #each file when any change is made.
-        
+
         self.file_path = file_path
         self.timeElapsed = 0
-        self.uploadval = False                                                          
-        self.createval = False                                                          
+        self.uploadval = False
+        self.createval = False
         iofslash = len(file_path)-file_path[::-1].find("/")
         self.filename = file_path[iofslash:]
         self.selectval = False
@@ -45,7 +45,7 @@ class Filedata(object):
         self.playFile = False
         self.plotcount = 0
         self.sheetmusic =False
-        
+
 
     def plot(self,app,rate,stage):
 
@@ -87,7 +87,7 @@ class Filedata(object):
                     self.canvas.get_tk_widget().destroy()
         except:
             pass
-            
+
     def fftplot(self,app,rate,stage):
         try:
             self.plotcount+=1
@@ -97,7 +97,7 @@ class Filedata(object):
             elif (stage =="temp"):
                 t = self.tempFileArray
                 CHANNELS = self.tempfileparameters[0]
-            
+
             self.amplitudevstimeval = False
             self.powervsfreqval = True
             self.fftfi = pylab.Figure(figsize=(6.5,5), dpi=100)
@@ -110,15 +110,15 @@ class Filedata(object):
             self.canvas = FigureCanvasTkAgg(self.fftfi, master=app)
             self.canvas.show()
             self.canvas.get_tk_widget().place(relx = 1.0/3 ,rely =0.125)
-            
+
         except:
             #In case of memory overflow error.
             app.createMessage("Graph Error. File is uploaded!")
-            
+
 class Application(Canvas,Filedata):
 
     def Upload(self):
-        
+
         if(self.upload["bg"]=="black"):
                 self.upload["bg"]="dark green"
                 # This gives a dialog box to select the file to upload
@@ -168,7 +168,7 @@ class Application(Canvas,Filedata):
                         self.createFileButton(f,count)
                         self.createOpenFiles()
                         self.upload["bg"]= "black"
-                    
+
                     except:
                         #If there is an error, like a memory flow error,
                         # it will not be loaded, and a message is given to the
@@ -176,7 +176,7 @@ class Application(Canvas,Filedata):
                         self.openFileList=self.openFileList[:-1]
                         self.selectedFile = oldSelected
                         self.createMessage("Error Loading File")
-                                 
+
                 else:
                     self.upload["bg"] = "black"
         else:
@@ -188,55 +188,55 @@ class Application(Canvas,Filedata):
         fileNumber = int(g[-1])
         count = 1
         for f in self.openFileList:
-            
+
             if(count==fileNumber):
 
                 if(name=="file1"):
                     self.file1["bg"] = self.sfcolour
-                    
+
                 elif(name=="file2"):
                     self.file2["bg"] = self.sfcolour
-                    
+
                 elif(name=="file3"):
                     self.file3["bg"] = self.sfcolour
-                    
+
                 elif(name=="file4"):
                     self.file4["bg"] = self.sfcolour
-                    
+
                 elif(name=="file5"):
                     self.file5["bg"] = self.sfcolour
-                    
+
                 elif(name=="file6"):
                     self.file6["bg"] = self.sfcolour
-                    
+
                 elif(name=="file7"):
                     self.file7["bg"] = self.sfcolour
-                    
+
                 elif(name=="file8"):
                     self.file8["bg"] = self.sfcolour
-                    
+
                 if(name!="file1" and len(self.openFileList)>0):
-                    
+
                     self.file1["bg"] = self.nsfcolour
-                    
+
                 if(name!="file2" and len(self.openFileList)>1):
                     self.file2["bg"] = self.nsfcolour
-                    
+
                 if(name!="file3" and len(self.openFileList)>2):
                     self.file3["bg"] = self.nsfcolour
-                    
+
                 if(name!="file4"and len(self.openFileList)>3):
                     self.file4["bg"] = self.nsfcolour
-                    
+
                 if(name!="file5"and len(self.openFileList)>4):
                     self.file5["bg"] = self.nsfcolour
-                    
+
                 if(name!="file6"and len(self.openFileList)>5):
                     self.file6["bg"] = self.nsfcolour
-                    
+
                 if(name!="file7"and len(self.openFileList)>6):
                     self.file7["bg"] = self.nsfcolour
-                    
+
                 if(name!="file8"and len(self.openFileList)>7):
                     self.file8["bg"] =self.nsfcolour
 
@@ -248,7 +248,7 @@ class Application(Canvas,Filedata):
                 #when the file button is pressed, it is opened and the
                 #amplitude vs time plot comes up by default.
                 if(f.tempFile==True):
-                    f.plot(self,rate,"temp")        
+                    f.plot(self,rate,"temp")
                 else:
                     f.plot(self,rate,"perm")
             count+=1
@@ -257,11 +257,11 @@ class Application(Canvas,Filedata):
 
         self.s= self.E.get()
         try:
-            
+
             seconds = int(self.s)
             #if a non-integer is entered, it crashes and gives the error message
             if(seconds>0):
-                
+
                 self.w.destroy()
                 CHUNK = 1024
                 FORMAT = pyaudio.paInt16
@@ -274,9 +274,9 @@ class Application(Canvas,Filedata):
                 file_path = tkFileDialog.asksaveasfilename(**self.file_opt)
 
                 if file_path:
-                    
+
                         self.createMessage("Recording")
-                
+
                         RECORD_SECONDS = seconds
                         WAVE_OUTPUT_FILENAME = file_path
                         p = pyaudio.PyAudio()
@@ -303,7 +303,7 @@ class Application(Canvas,Filedata):
                            frames.append(data)
                            pcm=numpy.fromstring(data, dtype=numpy.int16)
                            t = numpy.append(t,pcm)
-                        
+
                         self.createMessage("Finished recording")
                         #It is directly plotted
                         f = pylab.Figure(figsize=(6.5,5), dpi=100)
@@ -332,11 +332,11 @@ class Application(Canvas,Filedata):
 
             else:
                 showinfo("Warning!","Enter positive integer for seconds")
-                
+
         except:
             showinfo("Warning!","Enter positive integer for seconds")
-                
-        
+
+
     def Record(self):
         self.createMessage("")
         if(self.record["bg"]=="black"):
@@ -351,17 +351,17 @@ class Application(Canvas,Filedata):
             B = Button(master = self.w, text="Ok, Save and Start Recording", width=10, command=self.getSecondsInputAndCreate)
             B.grid(row = 3, column = 0)
             self.record["bg"]= "dark green"
-            
+
         else:
             self.record["bg"]= "black"
 
     def selectUsingBounds(self):
-        
+
         self.inputInit = self.E3.get()
         self.inputFin = self.E4.get()
 
         try:
-            
+
             self.initTime = float(self.inputInit)
             self.finTime = float(self.inputFin)
             #crashes if there is any non-float value entered.
@@ -381,7 +381,7 @@ class Application(Canvas,Filedata):
                 RATE = 44100
                 totalDuration = float(nframes)/RATE
                 CHUNK = 1024
-                        
+
                 if(self.finTime>totalDuration):
                     showinfo("Warning!","Enter Ending Time less than total duration which is %f"%(totalDuration))
                     return
@@ -389,9 +389,9 @@ class Application(Canvas,Filedata):
                 elif(self.finTime<self.initTime):
                     showinfo("Warning!","Enter Ending Time greater than Stating Time")
                     return
-                
+
                 self.w4.destroy()
-                
+
                 initialFrame = int((self.initTime/totalDuration)*nframes*CHANNELS)
                 finishingFrame = int((self.finTime/totalDuration)*nframes*CHANNELS)
 
@@ -404,14 +404,14 @@ class Application(Canvas,Filedata):
                 self.select["bg"]="black"
                 f.selectval = True
                 self.createMessage("Selected!")
-                
+
             else:
                 showinfo("Warning!","Enter positive values only!")
         except:
             showinfo("Warning!","Enter positive numbers only!")
 
     def Select(self):
-        
+
         self.createMessage("")
         if(self.select["bg"]=="black"):
             self.select["bg"]= "dark green"
@@ -431,7 +431,7 @@ class Application(Canvas,Filedata):
             L4 = Label(self.w4,text="Ending Time")
             L4.grid(row = 3,column = 0)
             self.E4 = Entry(self.w4)
-            self.E4.grid(row = 3, column = 10)   
+            self.E4.grid(row = 3, column = 10)
             B1 = Button(master = self.w4, text="Ok, Select", width=10, command=self.selectUsingBounds)
             B1.grid(row = 10, column = 5)
         else:
@@ -446,7 +446,7 @@ class Application(Canvas,Filedata):
             showinfo("Warning!","Please upload or create a file first")
             self.select["bg"]= "black"
             return
-            
+
         if(self.copy["bg"]=="black"):
             if(f.selectval == False):
                 self.Select()
@@ -459,9 +459,9 @@ class Application(Canvas,Filedata):
 
         else:
             self.copy["bg"]= "black"
-        
+
     def Cut(self):
-        
+
         self.createMessage("")
         f = self.selectedFile
         if(f==None):
@@ -476,7 +476,7 @@ class Application(Canvas,Filedata):
                 self.cut["bg"]= "dark green"
                 self.copyCutPart  = self.selectedPart
                 self.createMessage("Cutting...")
-                
+
                 f = self.selectedFile
                 rate = 44100
                 if(f.tempFile==True):
@@ -485,7 +485,7 @@ class Application(Canvas,Filedata):
                     fin = self.copyCutPart["fin"]
                     t = numpy.append(t[0:init],t[fin:])
                     f.tempFileArray = t
-                    (nchannels,sampwidth,framerate,nframes,comptype,compname) = f.tempfileparameters 
+                    (nchannels,sampwidth,framerate,nframes,comptype,compname) = f.tempfileparameters
                     nframes =  len(t)
                     f.tempfileparameters = (nchannels,sampwidth,framerate,nframes,comptype,compname)
                     f.plot(self,rate,"temp")
@@ -499,7 +499,7 @@ class Application(Canvas,Filedata):
                     #be created at this point
                     f.tempFileArray=t
                     f.tempfileparameters = f.origparameters
-                    (nchannels,sampwidth,framerate,nframes,comptype,compname) = f.tempfileparameters 
+                    (nchannels,sampwidth,framerate,nframes,comptype,compname) = f.tempfileparameters
                     nframes =  len(t)
                     f.tempfileparameters = (nchannels,sampwidth,framerate,nframes,comptype,compname)
                     f.plot(self,rate,"temp")
@@ -509,7 +509,7 @@ class Application(Canvas,Filedata):
                 self.createMessage("Done cutting!")
         else:
             self.copy["bg"]= "black"
-            
+
     def pasteUsingPosn(self):
 
         self.inputTime = self.E5.get()
@@ -533,7 +533,7 @@ class Application(Canvas,Filedata):
                 RATE = 44100
                 totalDuration = float(nframes)/RATE
                 CHUNK = 1024
-                        
+
                 if(self.atTime>totalDuration):
                     #Warning given, but user can still enter in the active field.
                     showinfo("Warning!","Enter At Time less than total duration which is %f"%(totalDuration))
@@ -543,7 +543,7 @@ class Application(Canvas,Filedata):
                     showinfo("Warning!","Number of channels of copied/cut part and file to be pasted to must be the same")
                     self.w5.destroy()
                     return
-                
+
                 self.w5.destroy()
                 self.atFrame = int((self.atTime/totalDuration)*nframes*CHANNELS)
                 f = self.selectedFile
@@ -555,7 +555,7 @@ class Application(Canvas,Filedata):
                     p = numpy.append(k,t[self.atFrame+1:])
                     #Here, the functions use corresponding array indices to edit.
                     f.tempFileArray = p
-                    (nchannels,sampwidth,framerate,nframes,comptype,compname) = f.tempfileparameters 
+                    (nchannels,sampwidth,framerate,nframes,comptype,compname) = f.tempfileparameters
                     nframes =  len(p)
                     f.tempfileparameters = (nchannels,sampwidth,framerate,nframes,comptype,compname)
                     f.plot(self,rate,"temp")
@@ -567,12 +567,12 @@ class Application(Canvas,Filedata):
                     f.tempFile = True
                     f.tempFileArray=p
                     f.tempfileparameters = f.origparameters
-                    (nchannels,sampwidth,framerate,nframes,comptype,compname) = f.tempfileparameters 
+                    (nchannels,sampwidth,framerate,nframes,comptype,compname) = f.tempfileparameters
                     nframes =  len(p)
                     f.tempfileparameters = (nchannels,sampwidth,framerate,nframes,comptype,compname)
                     f.plot(self,rate,"temp")
 
-                
+
                 self.paste["bg"]= "black"
             else:
                 showinfo("Warning!","Enter positive values only!")
@@ -581,9 +581,9 @@ class Application(Canvas,Filedata):
             showinfo("Warning!","Enter positive numbers only!")
             self.paste["bg"]= "black"
 
-        
+
     def Paste(self):
-        
+
         self.createMessage("")
         if(self.paste["bg"]=="black"):
             self.paste["bg"]= "dark green"
@@ -606,7 +606,7 @@ class Application(Canvas,Filedata):
             self.E5.grid(row = 0, column = 10)
             B = Button(master = self.w5, text="Ok", width=10, command=self.pasteUsingPosn)
             B.grid(row = 10, column = 5)
-            
+
         else:
             self.paste["bg"]= "black"
 
@@ -616,7 +616,7 @@ class Application(Canvas,Filedata):
         self.createMessage("")
         if(self.openFileList !=[]):
             f = self.selectedFile
-        
+
             if(f.saveval ==False):
                 self.save["bg"]= "dark green"
                 f.saveval = True
@@ -626,10 +626,10 @@ class Application(Canvas,Filedata):
                 else:
                         t = f.soundTrackArray
                         u = f.origparameters
-                    
+
                 f.soundTrackArray = t
                 f.origparameters = u
-                
+
                 WAVE_OUTPUT_FILENAME = f.file_path
                 data = numpy.ndarray.tostring(t)
                 frames = []
@@ -642,22 +642,22 @@ class Application(Canvas,Filedata):
                 self.save["bg"]="black"
 
     def Saveas(self):
-        
+
         self.createMessage("")
         if(self.openFileList !=[]):
             f = self.selectedFile
-        
+
             if(f.saveasval ==False):
                 f.saveasval = True
                 self.saveas["bg"]= "dark green"
                 FORMAT = pyaudio.paInt16
                 RATE = 44100
-                
+
                 self.file_opt = options = {}
                 options['filetypes'] = [('Wave files', '.wav')]
                 options['initialfile'] = 'untitled'
                 options['parent'] = self
-                
+
                 file_path = tkFileDialog.asksaveasfilename(**self.file_opt)
                 if file_path:
                     f.file_path = file_path
@@ -667,7 +667,7 @@ class Application(Canvas,Filedata):
                     else:
                         t = f.soundTrackArray
                     data = numpy.ndarray.tostring(t)
-                    
+
                     frames = []
                     frames.append(data)
                     wf = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
@@ -677,7 +677,7 @@ class Application(Canvas,Filedata):
                     else:
                         wf.setnchannels(f.origparameters[0])
                         wf.setsampwidth(f.origparameters[1])
-                        
+
                     wf.setframerate(RATE)
                     wf.setnframes = len(t)
                     wf.setcomptype("NONE","not compressed")
@@ -688,16 +688,16 @@ class Application(Canvas,Filedata):
                     f.saveasval = False
 
                 f.saveasval = True
-                
+
                 self.saveas["bg"]= "black"
-            
+
     def Removevoice(self):
         self.createMessage("")
         f = self.selectedFile
         if(f==None):
             showinfo("Warning!","Please upload or create a file first")
             return
-        
+
         if(f.removevoiceval==False):
             rate = 44100
             self.removevoice["bg"]= "dark green"
@@ -729,7 +729,7 @@ class Application(Canvas,Filedata):
                 f.destroy()
                 f.plot(self,rate,'temp')
                 self.removevoice["bg"]= "black"
-                    
+
         else:
             self.removevoiceval = True
             self.removevoice["bg"]= "black"
@@ -748,7 +748,7 @@ class Application(Canvas,Filedata):
                 self.w2.destroy()
                 f = self.selectedFile
                 rate = 44100
-                
+
                 if(f.tempFile==True):
                     t = f.tempFileArray
                     CHANNELS = f.tempfileparameters[0]
@@ -760,7 +760,7 @@ class Application(Canvas,Filedata):
 
                 self.createMessage("Processing...")
                 ####http://rsmith.home.xs4all.nl/miscellaneous/filtering-a-sound-recording.html
-                  
+
                 if(CHANNELS==2):
                     lchannel = t[0::2]
                     rchannel = t[1::2]
@@ -788,14 +788,14 @@ class Application(Canvas,Filedata):
                     f.fftplot(self,rate,'temp')
                 self.createMessage("Done!")
                 self.removenoise["bg"]= "black"
-               
+
             else:
                 showinfo("Warning!","Enter positive integer for both frequencies")
 
         except:
             showinfo("Warning!","Enter positive integer for both frequencies")
-        self.removenoise["bg"]= "black"        
-                
+        self.removenoise["bg"]= "black"
+
 
     def Removenoise(self):
 
@@ -803,23 +803,23 @@ class Application(Canvas,Filedata):
         f = self.selectedFile
         if(f==None):
             showinfo("Warning!","Please upload or create a file first")
-            return 
+            return
         if(self.removenoise["bg"]== "black"):
             self.removenoise["bg"]= "dark green"
-        
+
             if(f.tempFile==True):
                 t = f.tempFileArray
                 CHANNELS = f.tempfileparameters[0]
             else:
                 t = f.soundTrackArray
                 CHANNELS = f.origparameters[0]
-            
+
             if(CHANNELS==1):
 
                 showinfo("Warning!", "File must be stereo and not mono")
                 self.removenoise["bg"]= "black"
                 return
-            
+
             elif(CHANNELS ==2):
                 lchannel = t[0::2]
                 rchannel = t[1::2]
@@ -856,22 +856,22 @@ class Application(Canvas,Filedata):
             self.amplitudevstime["bg"]=="dark green"
             showinfo("Warning!","Please upload or create a file first")
             self.amplitudevstime["bg"]=="black"
-            return          
+            return
         if(self.amplitudevstime["bg"]=="black"):
-            
+
             self.amplitudevstime["bg"]= "dark green"
             self.powervsfreq["bg"]= "black"
             rate = 44100
             f.destroy()
             if(f.tempFile==True):
-                f.plot(self,rate,"temp")      
+                f.plot(self,rate,"temp")
             else:
                 f.plot(self,rate,"perm")
 
         else:
             self.amplitudevstime["bg"]= "black"
-            
-            
+
+
 
     def Powervsfreq(self):
         self.createMessage("")
@@ -881,7 +881,7 @@ class Application(Canvas,Filedata):
             showinfo("Warning!","Please upload or create a file first")
             self.powervsfreq["bg"]= "black"
             return
-        
+
         if(self.powervsfreq["bg"]=="black"):
             self.powervsfreq["bg"]= "dark green"
             self.amplitudevstime["bg"]= "black"
@@ -889,20 +889,20 @@ class Application(Canvas,Filedata):
             rate = 44100
             f.destroy()
             if(f.tempFile==True):
-                f.fftplot(self,rate,"temp")   
+                f.fftplot(self,rate,"temp")
             else:
                 f.fftplot(self,rate,"perm")
         else:
             self.powervsfreq["bg"]= "black"
-            
+
 
     def Sheetmusic(self):
-        
+
         self.createMessage("")
         if(self.sheetmusic["bg"]=="black"):
             self.sheetmusic["bg"]= "dark green"
 
-            
+
             CHUNK = 1024
             freqList = []
             f = self.selectedFile
@@ -921,15 +921,15 @@ class Application(Canvas,Filedata):
 
             else:
                 data = wf.readframes(CHUNK)
-                
+
                 counter = 1
-                
+
                 while(data!=''):
 
                     A3freq = 220
                     A5freq = 880
                     #### FREQUENCY DETECTION FROM http://stackoverflow.com/questions/4431481/frequency-detection-from-a-sound-file
-                    
+
                     # Take the fft and square each value
                     fftData=abs(numpy.fft.rfft(numpy.fromstring(data,dtype=numpy.int16)))**2
                     # find the maximum
@@ -945,31 +945,31 @@ class Application(Canvas,Filedata):
                                 freqList+=[thefreq]
                         except:
                             pass
-                            
+
                     else:
                         thefreq = which*RATE/CHUNK
                         if(thefreq>=A3freq and thefreq<A5freq):
                             freqList+=[thefreq]
-                            
+
                     # read some more data
-                    
+
                     data = wf.readframes(CHUNK)
                     counter+=1
 
             self.drawList = self.makeListToDraw(freqList)
             self.drawManuscript()
             self.sheetmusic["bg"]= "black"
-            
+
         else:
             self.sheetmusic["bg"]= "black"
 
-        
+
     def makeListToDraw(self,freqList):
         #Uses valsPerPlot number of frequencied=s to take average
         valsPerPlot = 5
         drawList = []
         for counter in xrange(0,len(freqList), valsPerPlot):
-            
+
             L = []
             for value in xrange(valsPerPlot):
                 if((counter+value)<len(freqList)):
@@ -980,12 +980,12 @@ class Application(Canvas,Filedata):
             drawList+=[finalVal]
         return drawList
 
-        
+
     def noteNo(self,freq):
         #frequency changes by a octaves exponentially.
         #Each note in consecutive octaves has double the
         #frequency of its previous octave.
-        import math  
+        import math
         for no in xrange(88):
             f = 2**((no-40)/12.0) * 261.6
             if (abs(freq - f)<=10):
@@ -1011,7 +1011,7 @@ class Application(Canvas,Filedata):
             for i in xrange(len(sharpList)):
                 if(sharpList[i]<N):
                     sharpCount+=1
-                
+
             middleCPosn = line*(self.manu["distBetLines"] + self.manu["distBetParts"]*5)
             cx = (countNotes%self.manu["numberNotesPerLine"])*self.manu["distBetNotes"] + self.manu["x0"]
             cy = middleCPosn-(N-40-sharpCount)*(self.manu["distBetParts"]/2.0)
@@ -1035,9 +1035,9 @@ class Application(Canvas,Filedata):
                 c.create_line(vl2x,vly1,vl2x, vly2)
                 c.create_line(hlx1,hl1y,hlx2,hl1y)
                 c.create_line(hlx1,hl2y,hlx2,hl2y)
-                
+
             countNotes+=1
-            
+
             if(countNotes%self.manu["numberNotesPerLine"]==0):
                 line+=1
 
@@ -1061,15 +1061,15 @@ class Application(Canvas,Filedata):
         y0 = self.manu["y0"]
         x1 = self.manu["x1"]
         y1 = self.manu["y1"]
-        
+
         for counter in xrange(self.manu["maxLines"]):
 
             for line in xrange(self.manu["eachLine"]):
-                
+
                 c.create_line(x0,y0,x1,y1)
                 y0+=self.manu["distBetParts"]
                 y1+=self.manu["distBetParts"]
-                
+
             y0+=self.manu["distBetLines"]
             y1+=self.manu["distBetLines"]
 
@@ -1078,7 +1078,7 @@ class Application(Canvas,Filedata):
     def Help(self):
         self.w6 = Toplevel(self)
         self.w6.title = "Help"
-        
+
         L = Label(self.w6, text="\n\
                 This software allows the user to analyze and edit audio files in the .wav format.\n\
                 Options available include -\n\
@@ -1097,13 +1097,13 @@ class Application(Canvas,Filedata):
                 Note1 : Upto 8 audio files can be uploaded at a time!\n\
                 Note2 : Stereo means audio data for both channels (left and right speakers) is present, whereas mono means, data is present in a mixed form.\n",justify = LEFT)
         L.pack(side = TOP)
-             
+
     def playSelectedFile(self):
         self.createMessage("")
         f = self.selectedFile
         if(f==None):
             return
-        
+
         if(f.tempFile== True):
             stage = "temp"
         else:
@@ -1112,14 +1112,14 @@ class Application(Canvas,Filedata):
         if(stage == "perm"):
 
                 def callback(in_data, frame_count, time_info, status):
-                    f = self.selectedFile   
+                    f = self.selectedFile
                     data = wf.readframes(CHUNK)
                     if(data != ''):
                         f.timeElapsed = wf.tell()/float(wf.getframerate())
                         f.framesElapsed = wf.tell()
-                        
+
                     return (data, pyaudio.paContinue)
-                
+
                 t = f.soundTrackArray
                 self.playing = True
                 f.playFile = True
@@ -1132,7 +1132,7 @@ class Application(Canvas,Filedata):
 
                 while stream.is_active():
                     time.sleep(0.1)
-                    
+
                 stream.stop_stream()
                 stream.close()
                 k.terminate()
@@ -1143,7 +1143,7 @@ class Application(Canvas,Filedata):
             t = f.tempFileArray
             CHANNELS = 2
             data = numpy.ndarray.tostring(t)
-                
+
             k = pyaudio.PyAudio()
             stream = k.open(format=pyaudio.paInt16,
                                 channels=CHANNELS,
@@ -1165,7 +1165,7 @@ class Application(Canvas,Filedata):
             k.terminate()
             f.playFile = False
 
-    
+
     def createPlayButton(self):
         self.playing = False
         self.play = Button(self)
@@ -1260,7 +1260,7 @@ class Application(Canvas,Filedata):
         x = 2.0/3
         y = 6.0/7
         self.time.place(relx = x, rely = y, anchor = NW)
-    
+
     def createWidgetsForSelFile(self):
 
         self.count=0
@@ -1280,15 +1280,15 @@ class Application(Canvas,Filedata):
         self.createButton("powervsfreq")
         self.createButton("sheetmusic")
         self.createButton("help")
-        
+
     def timerFired(self):
-    
+
         f = self.selectedFile
         if(f!=None):
             if(f.amplitudevstimeval==True):
                 self.amplitudevstime["bg"]= "dark green"
                 self.powervsfreq["bg"]= "black"
-            
+
             elif(f.powervsfreqval==True):
                 self.amplitudevstime["bg"]= "black"
                 self.powervsfreq["bg"]= "dark green"
@@ -1299,9 +1299,9 @@ class Application(Canvas,Filedata):
         except:
             pass
 
-        delay = 300    
+        delay = 300
         self.master.after(delay, self.timerFired)
-    
+
 
     def __init__(self, width, height,master=None):
 
@@ -1320,7 +1320,8 @@ class Application(Canvas,Filedata):
         master.update()
         showinfo("Welcome!", "You may start by either uploading a .wav file of your choice, or creating a new one!")
         self.timerFired()
-        
+
+#This is the stupid change I'm making
 def run():
 
     root = Tk()
